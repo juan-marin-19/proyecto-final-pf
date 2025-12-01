@@ -36,42 +36,5 @@ package object Itinerarios {
 
   }
 
-/*
-  // ----------------------------------------------
-  // 2. Minimización de tiempo total de viaje
-  // ----------------------------------------------
-  def itinerariosTiempo(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
 
-    // IMPLEMENTACIÓN AQUÍ
-    ???
-  }
-
-  // ----------------------------------------------
-  // 3. Minimización de número de escalas
-  // ----------------------------------------------
-  def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
-
-    // IMPLEMENTACIÓN AQUÍ
-    ???
-  }
-
-  // ----------------------------------------------
-  // 4. Minimización de tiempo en el aire
-  // ----------------------------------------------
-  def itinerariosAire(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
-
-    // IMPLEMENTACIÓN AQUÍ
-    ???
-  }
-
-  // ----------------------------------------------
-  // 5. Optimización de la hora de salida
-  // ----------------------------------------------
-  def itinerarioSalida(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int, Int) => Itinerario = {
-
-    // IMPLEMENTACIÓN AQUÍ
-    ???
-  }
-
- */
 }
