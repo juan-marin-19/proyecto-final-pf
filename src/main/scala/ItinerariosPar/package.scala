@@ -7,10 +7,9 @@ import scala.collection.parallel.ParSeq
 package object ItinerariosPar {
 
 
-    // ... (Tu función itinerarios secuencial aquí) ...
 
     // ----------------------------------------------
-    // 1b. Cálculo de todos los itinerarios (PARALELO)
+    // 1 Cálculo de todos los itinerarios
     // ----------------------------------------------
     def itinerariosPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
 
