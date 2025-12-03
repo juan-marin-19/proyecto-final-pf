@@ -1,47 +1,51 @@
-import datos._
+import
+datos._
 import Itinerarios._
 
-// Ejemplo curso pequeño
-val itsCurso = itinerarios(vuelosCurso,aeropuertosCurso)
-//2.1 Aeropuertos incomunicados
-val its1 = itsCurso("MID", "SVCS")
-val its2 = itsCurso("CLO", "SVCS")
 
-// 4 itinerarios CLO-SVO
-val its3 = itsCurso("CLO","SVO")
-//2 itinerarios CLO-MEX
-val its4 = itsCurso("CLO", "MEX")
-//2 itinerarios CTG-PTY
-val its5 = itsCurso("CTG","PTY")
+object Pruebas extends App {
+  // Ejemplo curso pequeño
+  val itsCurso = itinerarios(vuelosCurso, aeropuertosCurso)
+  //2.1 Aeropuertos incomunicados
+  val its1 = itsCurso("MID", "SVCS")
+  val its2 = itsCurso("CLO", "SVCS")
+  print(its1)
 
-
-//prueba itinerarioSalida
-//val itSalidaCurso = itinerarioSalida(vuelosCurso,aeropuertosCurso)
-
-//val itsal1 = itSalidaCurso("CTG","PTY",11, 40)
-//val itsal2 = itSalidaCurso("CTG","PTY",11, 55)
-//val itsal3 = itSalidaCurso("CTG","PTY",10,30)
+  // 4 itinerarios CLO-SVO
+  val its3 = itsCurso("CLO", "SVO")
+  //2 itinerarios CLO-MEX
+  val its4 = itsCurso("CLO", "MEX")
+  //2 itinerarios CTG-PTY
+  val its5 = itsCurso("CTG", "PTY")
 
 
-val itsTiempoCurso = itinerariosTiempo(vuelosCurso,aeropuertosCurso)
+  //prueba itinerarioSalida
+  //val itSalidaCurso = itinerarioSalida(vuelosCurso,aeropuertosCurso)
 
-// prueba itinerariosTiempo
-val itst1 = itsTiempoCurso("MID", "SVCS")
-val itst2 = itsTiempoCurso("CLO", "SVCS")
+  //val itsal1 = itSalidaCurso("CTG","PTY",11, 40)
+  //val itsal2 = itSalidaCurso("CTG","PTY",11, 55)
+  //val itsal3 = itSalidaCurso("CTG","PTY",10,30)
 
-// 4 itinerarios CLO-SVO
 
-val itst3 = itsTiempoCurso("CLO","SVO")
+  val itsTiempoCurso = itinerariosTiempo(vuelosCurso, aeropuertosCurso)
 
-//2 itinerarios CLO-MEX
+  // prueba itinerariosTiempo
+  val itst1 = itsTiempoCurso("MID", "SVCS")
+  val itst2 = itsTiempoCurso("CLO", "SVCS")
 
-val itst4 = itsTiempoCurso("CLO", "MEX")
+  // 4 itinerarios CLO-SVO
 
-//2 itinerarios CTG-PTY
-val itst5 = itsTiempoCurso("CTG","PTY")
+  val itst3 = itsTiempoCurso("CLO", "SVO")
 
-// prueba itinerariosEscalas
-/*val itsEscalasCurso = itinerariosEscalas(vuelosCurso,aeropuertosCurso)
+  //2 itinerarios CLO-MEX
+
+  val itst4 = itsTiempoCurso("CLO", "MEX")
+
+  //2 itinerarios CTG-PTY
+  val itst5 = itsTiempoCurso("CTG", "PTY")
+
+  // prueba itinerariosEscalas
+  /*val itsEscalasCurso = itinerariosEscalas(vuelosCurso,aeropuertosCurso)
 
 val itsc1 = itsEscalasCurso("MID", "SVCS")
 val itsc2 = itsEscalasCurso("CLO", "SVCS")
@@ -163,13 +167,14 @@ its500C("ORD","TPA")
 
  */
 
-/*
-// Ejemplo de invocación de la función
-val itsAireCurso = itinerariosAire(vuelosCurso, aeropuertosCurso)
 
-// 3 itinerarios minimizando el tiempo en aire
-val its1 = itsAireCurso("CLO", "SVO")
-val its2 = itsAireCurso("CLO", "MEX")
-val its3 = itsAireCurso("CTG", "PTY")
+  // Ejemplo de invocación de la función
+  val itsAireCurso = itinerariosAire(vuelosCurso, aeropuertosCurso)
 
- */
+  // 3 itinerarios minimizando el tiempo en aire
+  val its12 = itsAireCurso("CLO", "SVO")
+  val its22 = itsAireCurso("CLO", "MEX")
+  val its32 = itsAireCurso("CTG", "PTY")
+  print(its12)
+
+}
