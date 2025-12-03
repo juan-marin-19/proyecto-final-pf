@@ -94,3 +94,14 @@ its500CPar("ORD","TPA")
 
 
  */
+
+/*
+// Ejemplo de invocación
+val itsAireCursoPar = itinerariosAirePar(vuelosCurso, aeropuertosCurso)
+
+// 3 itinerarios minimizando el tiempo en aire
+val its1 = itsAireCursoPar("CLO", "SVO")
+val its2 = itsAireCursoPar("CLO", "MEX")
+val its3 = itsAireCursoPar("CTG", "PTY")
+
+ */

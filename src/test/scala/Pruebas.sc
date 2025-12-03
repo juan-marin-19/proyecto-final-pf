@@ -162,3 +162,14 @@ its500C("ORD","TPA")
 
 
  */
+
+/*
+// Ejemplo de invocación de la función
+val itsAireCurso = itinerariosAire(vuelosCurso, aeropuertosCurso)
+
+// 3 itinerarios minimizando el tiempo en aire
+val its1 = itsAireCurso("CLO", "SVO")
+val its2 = itsAireCurso("CLO", "MEX")
+val its3 = itsAireCurso("CTG", "PTY")
+
+ */
