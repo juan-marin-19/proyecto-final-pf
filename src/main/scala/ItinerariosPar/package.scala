@@ -275,6 +275,75 @@ package object ItinerariosPar {
       }
     }
   }
+  // -------------------------------------------------------
+  //  Itinerarios con límite de escala (versión paralela)
+  // -------------------------------------------------------
+  def itinerariosEscalasPar(vuelos: List[Vuelo],
+                            aeropuertos: List[Aeropuerto]):
+  (String, String, Int) => List[Itinerario] = {
+
+    // Exploración recursiva paralela
+    def construir(actual: String,
+                  destino: String,
+                  visitados: Set[String],
+                  maxEscalas: Int): List[Itinerario] = {
+
+      val umbral = 4  // mismo criterio
+
+      // Caso base 1: llegó al destino
+      if (actual == destino)
+        List(Nil)
+
+      // Caso base 2: se agotaron escalas
+      else if (maxEscalas < 0)
+        Nil
+
+      else {
+        // Vuelos salientes (secuencial)
+        val salientes =
+          for {
+            v <- vuelos
+            if v.Org == actual
+            if !visitados(v.Dst)
+          } yield v
+
+        // Exploración paralela sobre la lista de vuelos posibles
+        def explorarPar(vs: List[Vuelo]): List[Itinerario] = {
+          val n = vs.length
+
+          if (n <= umbral) {
+            // sin paralelizar
+            for {
+              vuelo <- vs
+              resto <- construir(
+                vuelo.Dst,
+                destino,
+                visitados + vuelo.Dst,
+                maxEscalas - 1
+              )
+            } yield vuelo :: resto
+
+          } else {
+            // dividir y conquistar
+            val (izq, der) = vs.splitAt(n / 2)
+
+            val (resIzq, resDer) = parallel(
+              explorarPar(izq),
+              explorarPar(der)
+            )
+
+            resIzq ++ resDer
+          }
+        }
+
+        explorarPar(salientes)
+      }
+    }
+
+    // función pública que se retorna
+    (origen: String, destino: String, maxEscalas: Int) =>
+      construir(origen, destino, Set(origen), maxEscalas)
+  }
 
 
 
