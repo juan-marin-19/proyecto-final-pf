@@ -1,4 +1,3 @@
-import datos._
 import Itinerarios._
 import ItinerariosPar._
 import org.scalameter._

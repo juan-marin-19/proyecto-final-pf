@@ -278,72 +278,73 @@ package object ItinerariosPar {
   // -------------------------------------------------------
   //  Itinerarios con límite de escala (versión paralela)
   // -------------------------------------------------------
-  def itinerariosEscalasPar(vuelos: List[Vuelo],
-                            aeropuertos: List[Aeropuerto]):
-  (String, String, Int) => List[Itinerario] = {
+  def itinerariosEscalasPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
+  (String, String) => List[Itinerario] = {
 
-    // Exploración recursiva paralela
-    def construir(actual: String,
-                  destino: String,
-                  visitados: Set[String],
-                  maxEscalas: Int): List[Itinerario] = {
+    // Generador paralelo de TODOS los itinerarios
+    val todosItsPar = itinerariosPar(vuelos, aeropuertos)
 
-      val umbral = 4  // mismo criterio
+    (origen: String, destino: String) => {
 
-      // Caso base 1: llegó al destino
-      if (actual == destino)
-        List(Nil)
+      val lista = todosItsPar(origen, destino)
 
-      // Caso base 2: se agotaron escalas
-      else if (maxEscalas < 0)
-        Nil
-
+      if (lista.isEmpty) Nil
       else {
-        // Vuelos salientes (secuencial)
-        val salientes =
-          for {
-            v <- vuelos
-            if v.Org == actual
-            if !visitados(v.Dst)
-          } yield v
 
-        // Exploración paralela sobre la lista de vuelos posibles
-        def explorarPar(vs: List[Vuelo]): List[Itinerario] = {
-          val n = vs.length
+        // ---------------------------------------------------
+        // 1. Calcular las escalas de cada itinerario en paralelo
+        // ---------------------------------------------------
+        def parMapEscalas(its: List[Itinerario]): List[(Itinerario, Int)] = {
+          val n = its.length
+          val umbral = 8
 
           if (n <= umbral) {
-            // sin paralelizar
-            for {
-              vuelo <- vs
-              resto <- construir(
-                vuelo.Dst,
-                destino,
-                visitados + vuelo.Dst,
-                maxEscalas - 1
-              )
-            } yield vuelo :: resto
-
+            // Caso base secuencial
+            its.map(it => (it, it.length - 1))
           } else {
-            // dividir y conquistar
-            val (izq, der) = vs.splitAt(n / 2)
+            val (left, right) = its.splitAt(n / 2)
 
-            val (resIzq, resDer) = parallel(
-              explorarPar(izq),
-              explorarPar(der)
+            val (resL, resR) = parallel(
+              parMapEscalas(left),
+              parMapEscalas(right)
             )
 
-            resIzq ++ resDer
+            resL ++ resR
           }
         }
 
-        explorarPar(salientes)
+        val pares = parMapEscalas(lista)
+
+        // ---------------------------------------------------
+        // 2. Encontrar el mínimo número de escalas en paralelo
+        // ---------------------------------------------------
+        def parMin(lista: List[(Itinerario, Int)]): Int = {
+          val n = lista.length
+          val umbral = 8
+
+          if (n <= umbral) lista.map(_._2).min
+          else {
+            val (left, right) = lista.splitAt(n / 2)
+
+            val (minL, minR) = parallel(
+              parMin(left),
+              parMin(right)
+            )
+
+            math.min(minL, minR)
+          }
+        }
+
+        val minimo = parMin(pares)
+
+        // ---------------------------------------------------
+        // 3. Filtrar los itinerarios con escalas mínimas
+        // ---------------------------------------------------
+        pares.collect { case (it, esc) if esc == minimo => it }
       }
     }
-
-    // función pública que se retorna
-    (origen: String, destino: String, maxEscalas: Int) =>
-      construir(origen, destino, Set(origen), maxEscalas)
   }
+
 
 
 

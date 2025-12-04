@@ -183,47 +183,32 @@ package object Itinerarios {
         .take(3)                              // Tomar los 3 mejores
   }
 //itinerarios escalas
-  def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
-  (String, String, Int) => List[Itinerario] = {
+def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
+(String, String) => List[Itinerario] = {
 
-    // Construcción recursiva con límite de escalas
-    def construir(actual: String,
-                  destino: String,
-                  visitados: Set[String],
-                  maxEscalas: Int): List[Itinerario] = {
+  // Usamos itinerarios() para generar todos los caminos posibles
+  val todosIts = itinerarios(vuelos, aeropuertos)
 
-      // Si llegamos al destino → itinerario válido (sin más vuelos)
-      if (actual == destino)
-        List(Nil)
+  (origen: String, destino: String) => {
+    val lista = todosIts(origen, destino)
 
-      // Si ya no quedan escalas permitidas → no hay itinerarios
-      else if (maxEscalas < 0)
-        Nil
+    if (lista.isEmpty)
+      Nil
+    else {
+      // Cada itinerario: longitud = número de vuelos
+      // escalas = vuelos - 1
+      val escalasPorIt = lista.map(it => (it, it.length - 1))
 
-      else {
-        // Vuelos salientes desde el aeropuerto actual
-        val salientes =
-          for {
-            v <- vuelos
-            if v.Org == actual
-            if !visitados(v.Dst) // evita ciclos
-          } yield v
+      // Encuentra el mínimo número de escalas posible
+      val minEscalas = escalasPorIt.map(_._2).min
 
-        // Expandir cada posible vuelo
-        for {
-          vuelo <- salientes
-          resto <- construir(
-            vuelo.Dst,
-            destino,
-            visitados + vuelo.Dst,
-            maxEscalas - 1  // consumir 1 escala
-          )
-        } yield vuelo :: resto
+      // Devuelve SOLO los de mínima escala
+      escalasPorIt.collect {
+        case (it, esc) if esc == minEscalas => it
       }
     }
-
-    (origen: String, destino: String, maxEscalas: Int) =>
-      construir(origen, destino, Set(origen), maxEscalas)
   }
+}
+
 
 }

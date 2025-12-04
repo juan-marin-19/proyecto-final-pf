@@ -1,4 +1,3 @@
-import datos._
 import ItinerariosPar._
 // import scala.util.Random
 import org.scalameter._

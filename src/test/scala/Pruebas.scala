@@ -1,7 +1,5 @@
-import
-datos._
 import Itinerarios._
-
+import datos._
 
 object Pruebas extends App {
   // Ejemplo curso pequeño
