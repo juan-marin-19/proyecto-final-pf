@@ -160,17 +160,18 @@ package object Itinerarios {
 
     // Tiempo total de viaje (vuelos + esperas) de un itinerario
 
-    def tiempoTotal(it: Itinerario): Int = {
-      def sumar(evts: List[Evento]): Int = evts match {
+    def tiempoVuelo(it: Itinerario): Int = {
+      def sumarVuelo(evts: List[Evento]): Int = evts match {
         case Nil           => 0
         case _ :: Nil      => 0
         case (c1,h1,m1) :: (c2,h2,m2) :: resto =>
-          diferenciaMinutos(c1,h1,m1,c2,h2,m2) +
-            sumar((c2,h2,m2) :: resto)
+          // Solo sumar los tiempos de vuelo, es decir, la diferencia entre la llegada de un vuelo y la salida del siguiente
+          diferenciaMinutos(c1, h1, m1, c2, h2, m2) + sumarVuelo((c2, h2, m2) :: resto)
       }
 
-      sumar(eventos(it))
+      sumarVuelo(eventos(it))
     }
+
 
     // Utilizando la función itinerarios base para obtener todos los itinerarios
 
@@ -179,7 +180,7 @@ package object Itinerarios {
     // Función final que obtiene los tres itinerarios con el tiempo más corto en aire
     (cod1: String, cod2: String) =>
       todosItinerarios(cod1, cod2)            // Todos los itinerarios c1 -> c2
-        .sortBy(tiempoTotal)                  // Ordenar por tiempo total de vuelo
+        .sortBy(tiempoVuelo)                  // Ordenar por tiempo total de vuelo
         .take(3)                              // Tomar los 3 mejores
   }
 
