@@ -69,19 +69,13 @@ package object Itinerarios {
     def eventos(it: Itinerario): List[Evento] = it match {
       case Nil => Nil
       case v0 :: vs =>
-        def construirEventos(actual: Vuelo, resto: List[Vuelo]): List[Evento] =
-          resto match {
-            case Nil =>
-              // Solo falta la llegada del ultimo vuelo
-              List((actual.Dst, actual.HL, actual.ML))
-            case siguiente :: cola =>
-              // llegada del actual, salida del siguiente, y se sigue
-              (actual.Dst, actual.HL, actual.ML) ::
-                (siguiente.Org, siguiente.HS, siguiente.MS) ::
-                construirEventos(siguiente, cola)
-          }
-
-        // Salida del primer vuelo seguida del resto de eventos
+        def construirEventos(actual: Vuelo, resto: List[Vuelo]): List[Evento] = resto match {
+          case Nil => List((actual.Dst, actual.HL, actual.ML))
+          case siguiente :: cola =>
+            (actual.Dst, actual.HL, actual.ML) ::
+              (siguiente.Org, siguiente.HS, siguiente.MS) ::
+              construirEventos(siguiente, cola)
+        }
         (v0.Org, v0.HS, v0.MS) :: construirEventos(v0, vs)
     }
 
@@ -160,17 +154,18 @@ package object Itinerarios {
 
     // Tiempo total de viaje (vuelos + esperas) de un itinerario
 
-    def tiempoTotal(it: Itinerario): Int = {
-      def sumar(evts: List[Evento]): Int = evts match {
+    def tiempoVuelo(it: Itinerario): Int = {
+      def sumarVuelo(evts: List[Evento]): Int = evts match {
         case Nil           => 0
         case _ :: Nil      => 0
         case (c1,h1,m1) :: (c2,h2,m2) :: resto =>
-          diferenciaMinutos(c1,h1,m1,c2,h2,m2) +
-            sumar((c2,h2,m2) :: resto)
+          // Solo sumar los tiempos de vuelo, es decir, la diferencia entre la llegada de un vuelo y la salida del siguiente
+          diferenciaMinutos(c1, h1, m1, c2, h2, m2) + sumarVuelo((c2, h2, m2) :: resto)
       }
 
-      sumar(eventos(it))
+      sumarVuelo(eventos(it))
     }
+
 
     // Utilizando la función itinerarios base para obtener todos los itinerarios
 
@@ -179,7 +174,7 @@ package object Itinerarios {
     // Función final que obtiene los tres itinerarios con el tiempo más corto en aire
     (cod1: String, cod2: String) =>
       todosItinerarios(cod1, cod2)            // Todos los itinerarios c1 -> c2
-        .sortBy(tiempoTotal)                  // Ordenar por tiempo total de vuelo
+        .sortBy(tiempoVuelo)                  // Ordenar por tiempo total de vuelo
         .take(3)                              // Tomar los 3 mejores
   }
 //itinerarios escalas

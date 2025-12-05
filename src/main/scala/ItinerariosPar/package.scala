@@ -13,7 +13,7 @@ package object ItinerariosPar {
 
       def construir(actual: String, destino: String, visitados: Set[String]): List[Itinerario] = {
 
-        val umbral = 4
+        val umbral = 10
         // Caso base
         if (actual == destino)
           List(Nil)
@@ -102,10 +102,8 @@ package object ItinerariosPar {
         def construirEventos(actual: Vuelo, resto: List[Vuelo]): List[Evento] =
           resto match {
             case Nil =>
-              // Solo falta la llegada del ultimo vuelo
               List((actual.Dst, actual.HL, actual.ML))
             case siguiente :: cola =>
-              // llegada del actual, salida del siguiente, y se sigue
               (actual.Dst, actual.HL, actual.ML) ::
                 (siguiente.Org, siguiente.HS, siguiente.MS) ::
                 construirEventos(siguiente, cola)
@@ -115,7 +113,7 @@ package object ItinerariosPar {
         (v0.Org, v0.HS, v0.MS) :: construirEventos(v0, vs)
     }
 
-    // --- Tiempo total de viaje (vuelos + esperas) de un itinerario ---
+    // Tiempo total de viaje (vuelos + esperas) de un itinerario
 
     def tiempoTotal(it: Itinerario): Int = {
       def sumar(evts: List[Evento]): Int = evts match {
@@ -142,7 +140,7 @@ package object ItinerariosPar {
           case Nil => Nil
           case _ =>
             val n = its.length
-            val umbral = 6
+            val umbral = 10
 
             if (n <= umbral) {
               // Caso base: calcular secuencialmente
@@ -168,6 +166,74 @@ package object ItinerariosPar {
             .map(_._1)          // Extraer solo los itinerarios
       }
     }
+  }
+
+  // -------------------------------------------------------
+  //  Itinerarios con límite de escala (versión paralela)
+  // -------------------------------------------------------
+  def itinerariosEscalasPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int) => List[Itinerario] = {
+
+    // Exploración recursiva paralela
+    def construir(actual: String,
+                  destino: String,
+                  visitados: Set[String],
+                  maxEscalas: Int): List[Itinerario] = {
+
+      val umbral = 10
+
+      // Caso base 1: llegó al destino
+      if (actual == destino)
+        List(Nil)
+
+      // Caso base 2: se agotaron escalas
+      else if (maxEscalas < 0)
+        Nil
+
+      else {
+        // Vuelos salientes (secuencial)
+        val salientes =
+          for {
+            v <- vuelos
+            if v.Org == actual
+            if !visitados(v.Dst)
+          } yield v
+
+        // Exploración paralela sobre la lista de vuelos posibles
+        def explorarPar(vs: List[Vuelo]): List[Itinerario] = {
+          val n = vs.length
+
+          if (n <= umbral) {
+            // sin paralelizar
+            for {
+              vuelo <- vs
+              resto <- construir(
+                vuelo.Dst,
+                destino,
+                visitados + vuelo.Dst,
+                maxEscalas - 1
+              )
+            } yield vuelo :: resto
+
+          } else {
+            // dividir y conquistar
+            val (izq, der) = vs.splitAt(n / 2)
+
+            val (resIzq, resDer) = parallel(
+              explorarPar(izq),
+              explorarPar(der)
+            )
+
+            resIzq ++ resDer
+          }
+        }
+
+        explorarPar(salientes)
+      }
+    }
+
+    // función pública que se retorna
+    (origen: String, destino: String, maxEscalas: Int) =>
+      construir(origen, destino, Set(origen), maxEscalas)
   }
 
   def itinerariosAirePar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
@@ -222,16 +288,16 @@ package object ItinerariosPar {
 
     // --- Tiempo total de viaje (vuelos + esperas) de un itinerario --- (solo tiempo en aire)
 
-    def tiempoTotal(it: Itinerario): Int = {
-      def sumar(evts: List[Evento]): Int = evts match {
+    def tiempoVuelo(it: Itinerario): Int = {
+      def sumarVuelo(evts: List[Evento]): Int = evts match {
         case Nil           => 0
         case _ :: Nil      => 0
         case (c1,h1,m1) :: (c2,h2,m2) :: resto =>
-          diferenciaMinutos(c1,h1,m1,c2,h2,m2) +
-            sumar((c2,h2,m2) :: resto)
+          // Solo sumar los tiempos de vuelo, es decir, la diferencia entre la llegada de un vuelo y la salida del siguiente
+          diferenciaMinutos(c1, h1, m1, c2, h2, m2) + sumarVuelo((c2, h2, m2) :: resto)
       }
 
-      sumar(eventos(it))
+      sumarVuelo(eventos(it))
     }
 
     // --- Paralelizar el cálculo de itinerarios ---
@@ -248,11 +314,11 @@ package object ItinerariosPar {
           case Nil => Nil
           case _ =>
             val n = its.length
-            val umbral = 6
+            val umbral = 10
 
             if (n <= umbral) {
               // Caso base: calcular secuencialmente
-              its.map(it => (it, tiempoTotal(it)))
+              its.map(it => (it, tiempoVuelo(it)))
             } else {
               // Dividir y conquistar en paralelo
               val (left, right) = its.splitAt(n / 2)
@@ -344,7 +410,6 @@ package object ItinerariosPar {
       }
     }
   }
-
 
 
 
