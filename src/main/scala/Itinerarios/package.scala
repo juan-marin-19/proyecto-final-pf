@@ -181,7 +181,6 @@ package object Itinerarios {
 def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
 (String, String) => List[Itinerario] = {
 
-  // Usamos itinerarios() para generar todos los caminos posibles
   val todosIts = itinerarios(vuelos, aeropuertos)
 
   (origen: String, destino: String) => {
@@ -190,17 +189,16 @@ def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
     if (lista.isEmpty)
       Nil
     else {
-      // Cada itinerario: longitud = número de vuelos
-      // escalas = vuelos - 1
+      // (Itinerario, número de escalas)
       val escalasPorIt = lista.map(it => (it, it.length - 1))
 
-      // Encuentra el mínimo número de escalas posible
       val minEscalas = escalasPorIt.map(_._2).min
+      val resultadoMapFilter =
+        escalasPorIt
+          .filter { case (_, esc) => esc == minEscalas }
+          .map { case (it, _) => it }
 
-      // Devuelve SOLO los de mínima escala
-      escalasPorIt.collect {
-        case (it, esc) if esc == minEscalas => it
-      }
+      resultadoMapFilter
     }
   }
 }

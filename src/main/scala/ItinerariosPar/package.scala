@@ -404,12 +404,15 @@ package object ItinerariosPar {
         val minimo = parMin(pares)
 
         // ---------------------------------------------------
-        // 3. Filtrar los itinerarios con escalas mínimas
+        // 3. Filtrar y transformar usando filter + map
         // ---------------------------------------------------
-        pares.collect { case (it, esc) if esc == minimo => it }
+        pares
+          .filter { case (_, esc) => esc == minimo } // nos quedamos con los de mínima escala
+          .map { case (it, _) => it }                // devolvemos solo el itinerario
       }
     }
   }
+
 
 
 
