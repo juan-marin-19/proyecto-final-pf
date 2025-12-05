@@ -341,6 +341,76 @@ package object ItinerariosPar {
       }
     }
   }
+  // -------------------------------------------------------
+  //  Itinerarios con límite de escala (versión paralela)
+  // -------------------------------------------------------
+  def itinerariosEscalasPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]):
+  (String, String) => List[Itinerario] = {
+
+    // Generador paralelo de TODOS los itinerarios
+    val todosItsPar = itinerariosPar(vuelos, aeropuertos)
+
+    (origen: String, destino: String) => {
+
+      val lista = todosItsPar(origen, destino)
+
+      if (lista.isEmpty) Nil
+      else {
+
+        // ---------------------------------------------------
+        // 1. Calcular las escalas de cada itinerario en paralelo
+        // ---------------------------------------------------
+        def parMapEscalas(its: List[Itinerario]): List[(Itinerario, Int)] = {
+          val n = its.length
+          val umbral = 8
+
+          if (n <= umbral) {
+            // Caso base secuencial
+            its.map(it => (it, it.length - 1))
+          } else {
+            val (left, right) = its.splitAt(n / 2)
+
+            val (resL, resR) = parallel(
+              parMapEscalas(left),
+              parMapEscalas(right)
+            )
+
+            resL ++ resR
+          }
+        }
+
+        val pares = parMapEscalas(lista)
+
+        // ---------------------------------------------------
+        // 2. Encontrar el mínimo número de escalas en paralelo
+        // ---------------------------------------------------
+        def parMin(lista: List[(Itinerario, Int)]): Int = {
+          val n = lista.length
+          val umbral = 8
+
+          if (n <= umbral) lista.map(_._2).min
+          else {
+            val (left, right) = lista.splitAt(n / 2)
+
+            val (minL, minR) = parallel(
+              parMin(left),
+              parMin(right)
+            )
+
+            math.min(minL, minR)
+          }
+        }
+
+        val minimo = parMin(pares)
+
+        // ---------------------------------------------------
+        // 3. Filtrar los itinerarios con escalas mínimas
+        // ---------------------------------------------------
+        pares.collect { case (it, esc) if esc == minimo => it }
+      }
+    }
+  }
+
 
 
 }

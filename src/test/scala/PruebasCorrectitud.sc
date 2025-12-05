@@ -1,6 +1,6 @@
-import datos._
 import Itinerarios._
 import ItinerariosPar._
+import datos._
 
 // ========== Helpers sencillos para imprimir ==========
 def titulo(txt: String): Unit = {
@@ -23,9 +23,9 @@ val itsCursoParF = itinerariosPar(vuelosCurso, aeropuertosCurso)*/
 val itsTpoCursoSeq = itinerariosTiempo(vuelosCurso, aeropuertosCurso)
 val itsTpoCursoPar = itinerariosTiempoPar(vuelosCurso, aeropuertosCurso)
 
-/*val itsEscCursoSeq = itinerariosEscalas(vuelosCurso, aeropuertosCurso)
+val itsEscCursoSeq = itinerariosEscalas(vuelosCurso, aeropuertosCurso)
 val itsEscCursoPar = itinerariosEscalasPar(vuelosCurso, aeropuertosCurso)
-
+/*
 val itsAirCursoSeq = itinerariosAire(vuelosCurso, aeropuertosCurso)
 val itsAirCursoPar = itinerariosAirePar(vuelosCurso, aeropuertosCurso)
 
@@ -54,19 +54,19 @@ for ((o, d) <- paresCurso) {
   println(s"itinerariosTiempo: seq = $lSeqT , par = $lParT")
 
   // itinerariosEscalas
-  /*val lSeqE   = itsEscCursoSeq(o, d).length
+  val lSeqE   = itsEscCursoSeq(o, d).length
   val lParE   = itsEscCursoPar(o, d).length
   println(s"itinerariosEscalas: seq = $lSeqE , par = $lParE")
+  /*
+    // itinerariosAire
+    val lSeqA   = itsAirCursoSeq(o, d).length
+    val lParA   = itsAirCursoPar(o, d).length
+    println(s"itinerariosAire:   seq = $lSeqA , par = $lParA")
 
-  // itinerariosAire
-  val lSeqA   = itsAirCursoSeq(o, d).length
-  val lParA   = itsAirCursoPar(o, d).length
-  println(s"itinerariosAire:   seq = $lSeqA , par = $lParA")
-
-  // itinerarioSalida (0 o 1 itinerario)
-  val salSeq  = itSalCursoSeq(o, d, 11, 40)
-  val salPar  = itSalCursoPar(o, d, 11, 40)
-  println(s"itinerarioSalida:  seq vacio? ${salSeq.isEmpty} , par vacio? ${salPar.isEmpty}")*/
+    // itinerarioSalida (0 o 1 itinerario)
+    val salSeq  = itSalCursoSeq(o, d, 11, 40)
+    val salPar  = itSalCursoPar(o, d, 11, 40)
+    println(s"itinerarioSalida:  seq vacio? ${salSeq.isEmpty} , par vacio? ${salPar.isEmpty}")*/
 }
 
 // -----------------------------------------------------------------------------------
@@ -80,9 +80,9 @@ val itsA1ParF = itinerariosPar(vuelosA1, aeropuertos)*/
 val itsTpoA1Seq = itinerariosTiempo(vuelosA1, aeropuertos)
 val itsTpoA1Par = itinerariosTiempoPar(vuelosA1, aeropuertos)
 
-/*val itsEscA1Seq = itinerariosEscalas(vuelosA1, aeropuertos)
+val itsEscA1Seq = itinerariosEscalas(vuelosA1, aeropuertos)
 val itsEscA1Par = itinerariosEscalasPar(vuelosA1, aeropuertos)
-
+/*
 val itsAirA1Seq = itinerariosAire(vuelosA1, aeropuertos)
 val itsAirA1Par = itinerariosAirePar(vuelosA1, aeropuertos)
 
@@ -98,9 +98,9 @@ contar("itinerarios A1 par", itsA1ParF(oA1, dA1))*/
 contar("itinerariosTiempo A1 seq", itsTpoA1Seq(oA1, dA1))
 contar("itinerariosTiempo A1 par", itsTpoA1Par(oA1, dA1))
 
-/*contar("itinerariosEscalas A1 seq", itsEscA1Seq(oA1, dA1))
+contar("itinerariosEscalas A1 seq", itsEscA1Seq(oA1, dA1))
 contar("itinerariosEscalas A1 par", itsEscA1Par(oA1, dA1))
-
+/*
 contar("itinerariosAire A1 seq", itsAirA1Seq(oA1, dA1))
 contar("itinerariosAire A1 par", itsAirA1Par(oA1, dA1))
 
@@ -118,9 +118,9 @@ val itsB1ParF = itinerariosPar(vuelosB1, aeropuertos)*/
 val itsTpoB1Seq = itinerariosTiempo(vuelosB1, aeropuertos)
 val itsTpoB1Par = itinerariosTiempoPar(vuelosB1, aeropuertos)
 
-/*val itsEscB1Seq = itinerariosEscalas(vuelosB1, aeropuertos)
+val itsEscB1Seq = itinerariosEscalas(vuelosB1, aeropuertos)
 val itsEscB1Par = itinerariosEscalasPar(vuelosB1, aeropuertos)
-
+/*
 val itsAirB1Seq = itinerariosAire(vuelosB1, aeropuertos)
 val itsAirB1Par = itinerariosAirePar(vuelosB1, aeropuertos)
 
@@ -136,9 +136,9 @@ contar("itinerarios B1 par", itsB1ParF(oB1, dB1))*/
 contar("itinerariosTiempo B1 seq", itsTpoB1Seq(oB1, dB1))
 contar("itinerariosTiempo B1 par", itsTpoB1Par(oB1, dB1))
 
-/*contar("itinerariosEscalas B1 seq", itsEscB1Seq(oB1, dB1))
+contar("itinerariosEscalas B1 seq", itsEscB1Seq(oB1, dB1))
 contar("itinerariosEscalas B1 par", itsEscB1Par(oB1, dB1))
-
+/*
 contar("itinerariosAire B1 seq", itsAirB1Seq(oB1, dB1))
 contar("itinerariosAire B1 par", itsAirB1Par(oB1, dB1))
 
@@ -156,9 +156,9 @@ val itsC1ParF = itinerariosPar(vuelosC1, aeropuertos)*/
 val itsTpoC1Seq = itinerariosTiempo(vuelosC1, aeropuertos)
 val itsTpoC1Par = itinerariosTiempoPar(vuelosC1, aeropuertos)
 
-/*val itsEscC1Seq = itinerariosEscalas(vuelosC1, aeropuertos)
+val itsEscC1Seq = itinerariosEscalas(vuelosC1, aeropuertos)
 val itsEscC1Par = itinerariosEscalasPar(vuelosC1, aeropuertos)
-
+/*
 val itsAirC1Seq = itinerariosAire(vuelosC1, aeropuertos)
 val itsAirC1Par = itinerariosAirePar(vuelosC1, aeropuertos)
 
@@ -174,9 +174,9 @@ contar("itinerarios C1 par", itsC1ParF(oC1, dC1))*/
 contar("itinerariosTiempo C1 seq", itsTpoC1Seq(oC1, dC1))
 contar("itinerariosTiempo C1 par", itsTpoC1Par(oC1, dC1))
 
-/*contar("itinerariosEscalas C1 seq", itsEscC1Seq(oC1, dC1))
+contar("itinerariosEscalas C1 seq", itsEscC1Seq(oC1, dC1))
 contar("itinerariosEscalas C1 par", itsEscC1Par(oC1, dC1))
-
+/*
 contar("itinerariosAire C1 seq", itsAirC1Seq(oC1, dC1))
 contar("itinerariosAire C1 par", itsAirC1Par(oC1, dC1))
 
@@ -196,9 +196,9 @@ val its200ParF = itinerariosPar(vuelos200, aeropuertos)*/
 val itsTpo200Seq = itinerariosTiempo(vuelos200, aeropuertos)
 val itsTpo200Par = itinerariosTiempoPar(vuelos200, aeropuertos)
 
-/*val itsEsc200Seq = itinerariosEscalas(vuelos200, aeropuertos)
+val itsEsc200Seq = itinerariosEscalas(vuelos200, aeropuertos)
 val itsEsc200Par = itinerariosEscalasPar(vuelos200, aeropuertos)
-
+/*
 val itsAir200Seq = itinerariosAire(vuelos200, aeropuertos)
 val itsAir200Par = itinerariosAirePar(vuelos200, aeropuertos)
 
@@ -211,9 +211,9 @@ contar("itinerarios 200 par", its200ParF(oC1, dC1))*/
 contar("itinerariosTiempo 200 seq", itsTpo200Seq(oC1, dC1))
 contar("itinerariosTiempo 200 par", itsTpo200Par(oC1, dC1))
 
-/*contar("itinerariosEscalas 200 seq", itsEsc200Seq(oC1, dC1))
+contar("itinerariosEscalas 200 seq", itsEsc200Seq(oC1, dC1))
 contar("itinerariosEscalas 200 par", itsEsc200Par(oC1, dC1))
-
+/*
 contar("itinerariosAire 200 seq", itsAir200Seq(oC1, dC1))
 contar("itinerariosAire 200 par", itsAir200Par(oC1, dC1))
 
