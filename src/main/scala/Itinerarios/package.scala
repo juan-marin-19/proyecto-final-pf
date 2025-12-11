@@ -109,20 +109,11 @@ package object Itinerarios {
     (origen: String, destino: String) => {
       val lista = todosIts(origen, destino)
 
-      if (lista.isEmpty)
-        Nil
-      else {
-        // (Itinerario, número de escalas)
-        val escalasPorIt = lista.map(it => (it, it.length - 1))
+      def escalas(it: Itinerario): Int =
+        if (it.isEmpty) 0
+        else (it.length - 1) + it.map(_.Esc).sum
 
-        val minEscalas = escalasPorIt.map(_._2).min
-        val resultadoMapFilter =
-          escalasPorIt
-            .filter { case (_, esc) => esc == minEscalas }
-            .map { case (it, _) => it }
-
-        resultadoMapFilter
-      }
+      lista.sortBy(escalas).take(3)
     }
   }
 
@@ -179,16 +170,13 @@ package object Itinerarios {
     // Tiempo total de viaje (vuelos + esperas) de un itinerario
 
     def tiempoVuelo(it: Itinerario): Int = {
-      def sumarVuelo(evts: List[Evento]): Int = evts match {
-        case Nil           => 0
-        case _ :: Nil      => 0
-        case (c1,h1,m1) :: (c2,h2,m2) :: resto =>
-          // Solo sumar los tiempos de vuelo, es decir, la diferencia entre la llegada de un vuelo y la salida del siguiente
-          diferenciaMinutos(c1, h1, m1, c2, h2, m2) + sumarVuelo((c2, h2, m2) :: resto)
-      }
 
-      sumarVuelo(eventos(it))
+      it.map { v =>
+        diferenciaMinutos(v.Org, v.HS, v.MS, v.Dst, v.HL, v.ML)
+      }.sum
+
     }
+
 
 
     // Utilizando la función itinerarios base para obtener todos los itinerarios

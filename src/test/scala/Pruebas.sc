@@ -1,52 +1,42 @@
 import datos._
 import Itinerarios._
-import ItinerariosPar.itinerarioSalidaPar
-import org.scalameter.{Key, Quantity, Warmer, config}
 
+// Ejemplo curso pequeño
+/*val itsCurso = itinerarios(vuelosCurso,aeropuertosCurso)
+//2.1 Aeropuertos incomunicados
+val its1 = itsCurso("MID", "SVCS")
+val its2 = itsCurso("CLO", "SVCS")
 
-object Pruebas extends App {
-  // Ejemplo curso pequeño
-  val itsCurso = itinerarios(vuelosCurso, aeropuertosCurso)
-  //2.1 Aeropuertos incomunicados
-  val its1 = itsCurso("MID", "SVCS")
-  val its2 = itsCurso("CLO", "SVCS")
-  print(its1)
+// 4 itinerarios CLO-SVO
 
-  // 4 itinerarios CLO-SVO
-  val its3 = itsCurso("CLO", "SVO")
-  //2 itinerarios CLO-MEX
-  val its4 = itsCurso("CLO", "MEX")
-  //2 itinerarios CTG-PTY
-  val its5 = itsCurso("CTG", "PTY")
+val its3 = itsCurso("CLO","SVO")
 
+//2 itinerarios CLO-MEX
 
-  //prueba itinerarioSalida
-  //val itSalidaCurso = itinerarioSalida(vuelosCurso,aeropuertosCurso)
+val its4 = itsCurso("CLO", "MEX")
 
-  //val itsal1 = itSalidaCurso("CTG","PTY",11, 40)
-  //val itsal2 = itSalidaCurso("CTG","PTY",11, 55)
-  //val itsal3 = itSalidaCurso("CTG","PTY",10,30)
+//2 itinerarios CTG-PTY
+val its5 = itsCurso("CTG","PTY")
 
+val itsTiempoCurso = itinerariosTiempo(vuelosCurso,aeropuertosCurso)
 
-  val itsTiempoCurso = itinerariosTiempo(vuelosCurso, aeropuertosCurso)
+// prueba itinerariosTiempo
+val itst1 = itsTiempoCurso("MID", "SVCS")
+val itst2 = itsTiempoCurso("CLO", "SVCS")
 
-  // prueba itinerariosTiempo
-  val itst1 = itsTiempoCurso("MID", "SVCS")
-  val itst2 = itsTiempoCurso("CLO", "SVCS")
+// 4 itinerarios CLO-SVO
 
-  // 4 itinerarios CLO-SVO
+val itst3 = itsTiempoCurso("CLO","SVO")
 
-  val itst3 = itsTiempoCurso("CLO", "SVO")
+//2 itinerarios CLO-MEX
 
-  //2 itinerarios CLO-MEX
+val itst4 = itsTiempoCurso("CLO", "MEX")
 
-  val itst4 = itsTiempoCurso("CLO", "MEX")
+//2 itinerarios CTG-PTY
+val itst5 = itsTiempoCurso("CTG","PTY")
 
-  //2 itinerarios CTG-PTY
-  val itst5 = itsTiempoCurso("CTG", "PTY")
-
-  // prueba itinerariosEscalas
-  /*val itsEscalasCurso = itinerariosEscalas(vuelosCurso,aeropuertosCurso)
+// prueba itinerariosEscalas
+val itsEscalasCurso = itinerariosEscalas(vuelosCurso,aeropuertosCurso)
 
 val itsc1 = itsEscalasCurso("MID", "SVCS")
 val itsc2 = itsEscalasCurso("CLO", "SVCS")
@@ -60,7 +50,7 @@ val itsc3 = itsEscalasCurso("CLO","SVO")
 val itsc4 = itsEscalasCurso("CLO", "MEX")
 
 //2 itinerarios CTG-PTY
-val itsc5 = itsEscalasCurso("CTG","PTY")
+val itsc5 = itsEscalasCurso("CTG","PTY")*/
 
 // prueba itinerariosAire
 val itsAireCurso = itinerariosAire(vuelosCurso,aeropuertosCurso)
@@ -79,7 +69,7 @@ val itsa4 = itsAireCurso("CLO", "MEX")
 //2 itinerarios CTG-PTY
 val itsa5 = itsAireCurso("CTG","PTY")
 
-// prueba itinerarioSalida
+/*/ prueba itinerarioSalida
 val itSalidaCurso = itinerarioSalida(vuelosCurso,aeropuertosCurso)
 
 val itsal1 = itSalidaCurso("CTG","PTY",11, 40)
@@ -164,85 +154,3 @@ its400C("ORD","TPA")
 val its500C = itinerarios(vuelosC1++vuelosC2++vuelosC3++vuelosC4++vuelosC5, aeropuertos)
 its500C("ORD","TPA")
 */
-
-
- */
-  def tiempoDe[T](body: => T) = {
-    val timeA1 =
-      config(
-        Key.exec.minWarmupRuns -> 20,
-        Key.exec.maxWarmupRuns -> 60,
-        Key.verbose -> false
-      ) withWarmer(new Warmer.Default) measure {
-        body
-      }
-    timeA1
-  }
-
-  def titulo(txt: String): Unit = {
-    println("\n" + "=" * 80)
-    println(txt)
-    println("=" * 80)
-  }
-
-  def speedup(tSeq: Quantity[Double], tPar: Quantity[Double]): Double =
-    tSeq.value / tPar.value
-  val funSalSeq15 = itinerarioSalida(vuelosA1, aeropuertos)
-  val funSalPar15 = itinerarioSalidaPar(vuelosA1, aeropuertos)
-
-  val tSalSeq15 = tiempoDe { funSalSeq15("HOU", "BNA", 18, 30) }
-  val tSalPar15 = tiempoDe { funSalPar15("HOU", "BNA", 18, 30) }
-
-  println(s"Salida 15 seq: $tSalSeq15")
-  println(s"Salida 15 par: $tSalPar15")
-  println(s"Aceleración Salida 15: ${speedup(tSalSeq15, tSalPar15)}")
-
-  // --- 40 vuelos (B1) DFW -> ORD ---
-  titulo("itinerarioSalida vs itinerarioSalidaPar - 40 vuelos (B1) DFW -> ORD")
-
-  val funSalSeq40 = itinerarioSalida(vuelosB1, aeropuertos)
-  val funSalPar40 = itinerarioSalidaPar(vuelosB1, aeropuertos)
-
-  val tSalSeq40 = tiempoDe { funSalSeq40("DFW", "ORD", 18, 30) }
-  val tSalPar40 = tiempoDe { funSalPar40("DFW", "ORD", 18, 30) }
-
-  println(s"Salida 40 seq: $tSalSeq40")
-  println(s"Salida 40 par: $tSalPar40")
-  println(s"Aceleración Salida 40: ${speedup(tSalSeq40, tSalPar40)}")
-
-  // --- 100 vuelos (C1) ORD -> TPA ---
-  titulo("itinerarioSalida vs itinerarioSalidaPar - 100 vuelos (C1) ORD -> TPA")
-
-  val funSalSeq100 = itinerarioSalida(vuelosC1, aeropuertos)
-  val funSalPar100 = itinerarioSalidaPar(vuelosC1, aeropuertos)
-
-  val tSalSeq100 = tiempoDe { funSalSeq100("ORD", "TPA", 18, 30) }
-  val tSalPar100 = tiempoDe { funSalPar100("ORD", "TPA", 18, 30) }
-
-  println(s"Salida 100 seq: $tSalSeq100")
-  println(s"Salida 100 par: $tSalPar100")
-  println(s"Aceleración Salida 100: ${speedup(tSalSeq100, tSalPar100)}")
-
-  // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
-  titulo("itinerarioSalida vs itinerarioSalidaPar - 200 vuelos (C1 ++ C2) ORD -> TPA")
-
-
-
-
-  // --- 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA ---
-  titulo("itinerarioSalida vs itinerarioSalidaPar - 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA")
-
-  val vuelos300 = vuelosC1 ++ vuelosC2 ++ vuelosC3
-
-  val funSalSeq300 = itinerarioSalida(vuelos300, aeropuertos)
-  val funSalPar300 = itinerarioSalidaPar(vuelos300, aeropuertos)
-
-  val tSalSeq300 = tiempoDe { funSalSeq300("ORD", "TPA", 18, 30) }
-  val tSalPar300 = tiempoDe { funSalPar300("ORD", "TPA", 18, 30) }
-
-  println(s"itinerarioSalida 300 seq: $tSalSeq300")
-  println(s"itinerarioSalida 300 par: $tSalPar300")
-  println(s"Aceleración itinerarioSalida 300: ${speedup(tSalSeq300, tSalPar300)}")
-
-
-}

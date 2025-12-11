@@ -75,7 +75,7 @@ val vuelos200b = vuelosC1 ++ vuelosC2
 
 val funTpoSeq200 = itinerariosTiempo(vuelos200b, aeropuertos)
 val funTpoPar200 = itinerariosTiempoPar(vuelos200b, aeropuertos)
-/*
+
 val tSeq200 = tiempoDe { funTpoSeq200("ORD", "TPA") }
 val tPar200 = tiempoDe { funTpoPar200("ORD", "TPA") }
 
@@ -83,21 +83,6 @@ println(s"Secuencial 200: $tSeq200")
 println(s"Paralelo   200: $tPar200")
 println(s"Aceleración 200 (seq/par): ${speedup(tSeq200, tPar200)}")
 
-// --- 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA ---
-titulo("itinerariosTiempo vs itinerariosTiempoPar - 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA")
-
-val vuelos300 = vuelosC1 ++ vuelosC2 ++ vuelosC3
-
-val funTpoSeq300 = itinerariosTiempo(vuelos300, aeropuertos)
-val funTpoPar300 = itinerariosTiempoPar(vuelos300, aeropuertos)
-
-val tSeq300 = tiempoDe { funTpoSeq300("ORD", "TPA") }
-val tPar300 = tiempoDe { funTpoPar300("ORD", "TPA") }
-
-println(s"Secuencial 300: $tSeq300")
-println(s"Paralelo   300: $tPar300")
-println(s"Aceleración 300 (seq/par): ${speedup(tSeq300, tPar300)}")
-*/
 // --------------------------------------------------------------------
 // 2. Esqueleto de PRUEBAS PARA TODAS LAS FUNCIONES (COMENTADO)
 // --------------------------------------------------------------------
@@ -146,6 +131,8 @@ println(s"Aceleración itinerarios 100: ${speedup(tItsSeq100, tItsPar100)}")
 // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
 titulo("itinerarios vs itinerariosPar - 200 vuelos (C1 ++ C2) ORD -> TPA")
 
+val vuelos200b = vuelosC1 ++ vuelosC2
+
 val funItsSeq200 = itinerarios(vuelos200b, aeropuertos)
 val funItsPar200 = itinerariosPar(vuelos200b, aeropuertos)
 
@@ -155,21 +142,6 @@ val tItsPar200 = tiempoDe { funItsPar200("ORD", "TPA") }
 println(s"itinerarios 200 seq: $tItsSeq200")
 println(s"itinerarios 200 par: $tItsPar200")
 println(s"Aceleración itinerarios 200: ${speedup(tItsSeq200, tItsPar200)}")
-
-// --- 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA ---
-titulo("itinerarios vs itinerariosPar - 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA")
-
-val vuelos300 = vuelosC1 ++ vuelosC2 ++ vuelosC3
-
-val funItsSeq300 = itinerarios(vuelos300, aeropuertos)
-val funItsPar300 = itinerariosPar(vuelos300, aeropuertos)
-
-val tSeq300 = tiempoDe { funItsSeq300("ORD", "TPA") }
-val tPar300 = tiempoDe { funItsPar300("ORD", "TPA") }
-
-println(s"itinerarios 300 seq: $tItsSeq300")
-println(s"itinerarios 300 par: $tItsPar300")
-println(s"Aceleración itinerarios 300: ${speedup(tItsSeq300, tItsPar300)}")
 
 */
 
@@ -217,6 +189,8 @@ println(s"Aceleración Escalas 100: ${speedup(tEscSeq100, tEscPar100)}")
 // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
 titulo("itinerariosEscalas vs itinerariosEscalasPar - 200 vuelos (C1 ++ C2) ORD -> TPA")
 
+val vuelos200b = vuelosC1 ++ vuelosC2
+
 val funEscSeq200 = itinerariosEscalas(vuelos200b, aeropuertos)
 val funEscPar200 = itinerariosEscalasPar(vuelos200b, aeropuertos)
 
@@ -226,21 +200,6 @@ val tEscPar200 = tiempoDe { funEscPar200("ORD", "TPA") }
 println(s"Escalas 200 seq: $tEscSeq200")
 println(s"Escalas 200 par: $tEscPar200")
 println(s"Aceleración Escalas 200: ${speedup(tEscSeq200, tEscPar200)}")
-
-// --- 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA ---
-titulo("itinerariosEscalas vs itinerariosEscalasPar - 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA")
-
-val vuelos300 = vuelosC1 ++ vuelosC2 ++ vuelosC3
-
-val funEscSeq300 = itinerariosEscalas(vuelos300, aeropuertos)
-val funEscPar300 = itinerariosEscalasPar(vuelos300, aeropuertos)
-
-val tEscSeq300 = tiempoDe { funEscSeq300("ORD", "TPA") }
-val tEscPar300 = tiempoDe { funEscPar300("ORD", "TPA") }
-
-println(s"itinerariosEscalas 300 seq: $tEscSeq300")
-println(s"itinerariosEscalas 300 par: $tEscPar300")
-println(s"Aceleración itinerariosEscalas 300: ${speedup(tEscSeq300, tEscPar300)}")
 
 */
 
@@ -288,6 +247,8 @@ println(s"Aceleración Aire 100: ${speedup(tAirSeq100, tAirPar100)}")
 // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
 titulo("itinerariosAire vs itinerariosAirePar - 200 vuelos (C1 ++ C2) ORD -> TPA")
 
+val vuelos200b = vuelosC1 ++ vuelosC2
+
 val funAirSeq200 = itinerariosAire(vuelos200b, aeropuertos)
 val funAirPar200 = itinerariosAirePar(vuelos200b, aeropuertos)
 
@@ -298,27 +259,12 @@ println(s"Aire 200 seq: $tAirSeq200")
 println(s"Aire 200 par: $tAirPar200")
 println(s"Aceleración Aire 200: ${speedup(tAirSeq200, tAirPar200)}")
 
-// --- 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA ---
-titulo("itinerariosAire vs itinerariosAirePar - 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA")
-
-val vuelos300 = vuelosC1 ++ vuelosC2 ++ vuelosC3
-
-val funAireSeq300 = itinerariosAire(vuelos300, aeropuertos)
-val funAirePar300 = itinerariosAirePar(vuelos300, aeropuertos)
-
-val tAireSeq300 = tiempoDe { funAireSeq300("ORD", "TPA") }
-val tAirePar300 = tiempoDe { funAirePar300("ORD", "TPA") }
-
-println(s"itinerariosAire 300 seq: $tAireSeq300")
-println(s"itinerariosAire 300 par: $tAirePar300")
-println(s"Aceleración itinerariosAire 300: ${speedup(tAireSeq300, tAirePar300)}")
-
 */
 
-// ==================  itinerarioSalida vs itinerarioSalidaPar  ==================
+/* ==================  itinerarioSalida vs itinerarioSalidaPar  ==================
 
 // --- 15 vuelos (A1) HOU -> BNA ---
-//titulo("itinerarioSalida vs itinerarioSalidaPar - 15 vuelos (A1) HOU -> BNA")
+titulo("itinerarioSalida vs itinerarioSalidaPar - 15 vuelos (A1) HOU -> BNA")
 
 val funSalSeq15 = itinerarioSalida(vuelosA1, aeropuertos)
 val funSalPar15 = itinerarioSalidaPar(vuelosA1, aeropuertos)
@@ -359,6 +305,8 @@ println(s"Aceleración Salida 100: ${speedup(tSalSeq100, tSalPar100)}")
 // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
 titulo("itinerarioSalida vs itinerarioSalidaPar - 200 vuelos (C1 ++ C2) ORD -> TPA")
 
+val vuelos200b = vuelosC1 ++ vuelosC2
+
 val funSalSeq200 = itinerarioSalida(vuelos200b, aeropuertos)
 val funSalPar200 = itinerarioSalidaPar(vuelos200b, aeropuertos)
 
@@ -369,21 +317,6 @@ println(s"Salida 200 seq: $tSalSeq200")
 println(s"Salida 200 par: $tSalPar200")
 println(s"Aceleración Salida 200: ${speedup(tSalSeq200, tSalPar200)}")
 
-// --- 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA ---
-titulo("itinerarioSalida vs itinerarioSalidaPar - 300 vuelos (C1 ++ C2 ++ C3) ORD -> TPA")
-
-val vuelos300 = vuelosC1 ++ vuelosC2 ++ vuelosC3
-
-val funSalSeq300 = itinerarioSalida(vuelos300, aeropuertos)
-val funSalPar300 = itinerarioSalidaPar(vuelos300, aeropuertos)
-
-val tSalSeq300 = tiempoDe { funSalSeq300("ORD", "TPA", 18, 30) }
-val tSalPar300 = tiempoDe { funSalPar300("ORD", "TPA", 18, 30) }
-
-println(s"itinerarioSalida 300 seq: $tSalSeq300")
-println(s"itinerarioSalida 300 par: $tSalPar300")
-println(s"Aceleración itinerarioSalida 300: ${speedup(tSalSeq300, tSalPar300)}")
-
-
+*/
 
 println("\nBENCHMARKS COMPLETADOS")

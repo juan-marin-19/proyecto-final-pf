@@ -289,16 +289,13 @@ package object ItinerariosPar {
     // --- Tiempo total de viaje (vuelos + esperas) de un itinerario --- (solo tiempo en aire)
 
     def tiempoVuelo(it: Itinerario): Int = {
-      def sumarVuelo(evts: List[Evento]): Int = evts match {
-        case Nil           => 0
-        case _ :: Nil      => 0
-        case (c1,h1,m1) :: (c2,h2,m2) :: resto =>
-          // Solo sumar los tiempos de vuelo, es decir, la diferencia entre la llegada de un vuelo y la salida del siguiente
-          diferenciaMinutos(c1, h1, m1, c2, h2, m2) + sumarVuelo((c2, h2, m2) :: resto)
-      }
 
-      sumarVuelo(eventos(it))
+      it.map { v =>
+        diferenciaMinutos(v.Org, v.HS, v.MS, v.Dst, v.HL, v.ML)
+      }.sum
+
     }
+
 
     // --- Paralelizar el cálculo de itinerarios ---
 
