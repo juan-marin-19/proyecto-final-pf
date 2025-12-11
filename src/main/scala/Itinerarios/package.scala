@@ -69,19 +69,13 @@ package object Itinerarios {
     def eventos(it: Itinerario): List[Evento] = it match {
       case Nil => Nil
       case v0 :: vs =>
-        def construirEventos(actual: Vuelo, resto: List[Vuelo]): List[Evento] =
-          resto match {
-            case Nil =>
-              // Solo falta la llegada del ultimo vuelo
-              List((actual.Dst, actual.HL, actual.ML))
-            case siguiente :: cola =>
-              // llegada del actual, salida del siguiente, y se sigue
-              (actual.Dst, actual.HL, actual.ML) ::
-                (siguiente.Org, siguiente.HS, siguiente.MS) ::
-                construirEventos(siguiente, cola)
-          }
-
-        // Salida del primer vuelo seguida del resto de eventos
+        def construirEventos(actual: Vuelo, resto: List[Vuelo]): List[Evento] = resto match {
+          case Nil => List((actual.Dst, actual.HL, actual.ML))
+          case siguiente :: cola =>
+            (actual.Dst, actual.HL, actual.ML) ::
+              (siguiente.Org, siguiente.HS, siguiente.MS) ::
+              construirEventos(siguiente, cola)
+        }
         (v0.Org, v0.HS, v0.MS) :: construirEventos(v0, vs)
     }
 
@@ -106,6 +100,30 @@ package object Itinerarios {
       todosItinerarios(cod1, cod2)        // todos los itinerarios c1 -> c2
         .sortBy(tiempoTotal)              // ordenados por tiempo total de viaje
         .take(3)                          // los tres mejores (o menos)
+  }
+
+  def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
+
+    val todosIts = itinerarios(vuelos, aeropuertos)
+
+    (origen: String, destino: String) => {
+      val lista = todosIts(origen, destino)
+
+      if (lista.isEmpty)
+        Nil
+      else {
+        // (Itinerario, número de escalas)
+        val escalasPorIt = lista.map(it => (it, it.length - 1))
+
+        val minEscalas = escalasPorIt.map(_._2).min
+        val resultadoMapFilter =
+          escalasPorIt
+            .filter { case (_, esc) => esc == minEscalas }
+            .map { case (it, _) => it }
+
+        resultadoMapFilter
+      }
+    }
   }
 
   def itinerariosAire(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
@@ -184,6 +202,54 @@ package object Itinerarios {
         .take(3)                              // Tomar los 3 mejores
   }
 
+  def itinerarioSalida(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int, Int) => Itinerario = {
 
+    // Convierte hora local a minutos desde medianoche
+    def horaEnMinutos(h: Int, m: Int): Int = h * 60 + m
+
+    def horaSalida(it: Itinerario): Int = it match {
+      case Nil => 0
+      case vuelo :: _ => horaEnMinutos(vuelo.HS, vuelo.MS)
+    }
+
+    def horaLlegada(it: Itinerario): Int = it match {
+      case Nil => 0
+      case _ => horaEnMinutos(it.last.HL, it.last.ML)
+    }
+
+    val todosItinerarios = itinerarios(vuelos, aeropuertos)
+
+    (cod1: String, cod2: String, hCita: Int, mCita: Int) => {
+
+      val candidatos = todosItinerarios(cod1, cod2)
+
+      candidatos match {
+        case Nil => Nil
+
+        case _ =>
+          val citaMinutos = horaEnMinutos(hCita, mCita)
+
+          // Filtrar los itinerarios que llegan el mismo día y el día anterior
+          val mismoDia = candidatos.filter { it =>
+            horaLlegada(it) <= citaMinutos
+          }
+
+          val diaAnterior = candidatos.filter { it =>
+            horaLlegada(it) > citaMinutos
+          }
+
+          // SIEMPRE elegir el de salida más tarde, priorizando mismo día
+          mismoDia match {
+            case Nil =>
+              // Todos son del día anterior, elegir el de salida más tarde
+              diaAnterior.maxBy(horaSalida)
+
+            case _ =>
+              // Hay del mismo día, elegir el de salida más tarde
+              mismoDia.maxBy(horaSalida)
+          }
+      }
+    }
+  }
 
 }

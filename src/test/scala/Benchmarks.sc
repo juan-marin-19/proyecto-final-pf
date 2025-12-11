@@ -75,7 +75,7 @@ val vuelos200b = vuelosC1 ++ vuelosC2
 
 val funTpoSeq200 = itinerariosTiempo(vuelos200b, aeropuertos)
 val funTpoPar200 = itinerariosTiempoPar(vuelos200b, aeropuertos)
-
+/*
 val tSeq200 = tiempoDe { funTpoSeq200("ORD", "TPA") }
 val tPar200 = tiempoDe { funTpoPar200("ORD", "TPA") }
 
@@ -97,7 +97,7 @@ val tPar300 = tiempoDe { funTpoPar300("ORD", "TPA") }
 println(s"Secuencial 300: $tSeq300")
 println(s"Paralelo   300: $tPar300")
 println(s"Aceleración 300 (seq/par): ${speedup(tSeq300, tPar300)}")
-
+*/
 // --------------------------------------------------------------------
 // 2. Esqueleto de PRUEBAS PARA TODAS LAS FUNCIONES (COMENTADO)
 // --------------------------------------------------------------------
@@ -315,10 +315,10 @@ println(s"Aceleración itinerariosAire 300: ${speedup(tAireSeq300, tAirePar300)}
 
 */
 
-/* ==================  itinerarioSalida vs itinerarioSalidaPar  ==================
+// ==================  itinerarioSalida vs itinerarioSalidaPar  ==================
 
 // --- 15 vuelos (A1) HOU -> BNA ---
-titulo("itinerarioSalida vs itinerarioSalidaPar - 15 vuelos (A1) HOU -> BNA")
+//titulo("itinerarioSalida vs itinerarioSalidaPar - 15 vuelos (A1) HOU -> BNA")
 
 val funSalSeq15 = itinerarioSalida(vuelosA1, aeropuertos)
 val funSalPar15 = itinerarioSalidaPar(vuelosA1, aeropuertos)
@@ -384,6 +384,6 @@ println(s"itinerarioSalida 300 seq: $tSalSeq300")
 println(s"itinerarioSalida 300 par: $tSalPar300")
 println(s"Aceleración itinerarioSalida 300: ${speedup(tSalSeq300, tSalPar300)}")
 
-*/
+
 
 println("\nBENCHMARKS COMPLETADOS")
