@@ -102,45 +102,19 @@ package object Itinerarios {
         .take(3)                          // los tres mejores (o menos)
   }
 
-  def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int) => List[Itinerario] = {
-    // Construcción recursiva con límite de escalas
-    def construir(actual: String,
-                  destino: String,
-                  visitados: Set[String],
-                  maxEscalas: Int): List[Itinerario] = {
+  def itinerariosEscalas(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
 
-      // Si llegamos al destino → itinerario válido (sin más vuelos)
-      if (actual == destino)
-        List(Nil)
+    val todosIts = itinerarios(vuelos, aeropuertos)
 
-      // Si ya no quedan escalas permitidas → no hay itinerarios
-      else if (maxEscalas < 0)
-        Nil
+    (origen: String, destino: String) => {
+      val lista = todosIts(origen, destino)
 
-      else {
-        // Vuelos salientes desde el aeropuerto actual
-        val salientes =
-          for {
-            v <- vuelos
-            if v.Org == actual
-            if !visitados(v.Dst) // evita ciclos
-          } yield v
+      def escalas(it: Itinerario): Int =
+        if (it.isEmpty) 0
+        else (it.length - 1) + it.map(_.Esc).sum
 
-        // Expandir cada posible vuelo
-        for {
-          vuelo <- salientes
-          resto <- construir(
-            vuelo.Dst,
-            destino,
-            visitados + vuelo.Dst,
-            maxEscalas - 1  // consumir 1 escala
-          )
-        } yield vuelo :: resto
-      }
+      lista.sortBy(escalas).take(3)
     }
-
-    (origen: String, destino: String, maxEscalas: Int) =>
-      construir(origen, destino, Set(origen), maxEscalas)
   }
 
   def itinerariosAire(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
@@ -217,6 +191,56 @@ package object Itinerarios {
       todosItinerarios(cod1, cod2)            // Todos los itinerarios c1 -> c2
         .sortBy(tiempoVuelo)                  // Ordenar por tiempo total de vuelo
         .take(3)                              // Tomar los 3 mejores
+  }
+
+  def itinerarioSalida(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int, Int) => Itinerario = {
+
+    // Convierte hora local a minutos desde medianoche
+    def horaEnMinutos(h: Int, m: Int): Int = h * 60 + m
+
+    def horaSalida(it: Itinerario): Int = it match {
+      case Nil => 0
+      case vuelo :: _ => horaEnMinutos(vuelo.HS, vuelo.MS)
+    }
+
+    def horaLlegada(it: Itinerario): Int = it match {
+      case Nil => 0
+      case _ => horaEnMinutos(it.last.HL, it.last.ML)
+    }
+
+    val todosItinerarios = itinerarios(vuelos, aeropuertos)
+
+    (cod1: String, cod2: String, hCita: Int, mCita: Int) => {
+
+      val candidatos = todosItinerarios(cod1, cod2)
+
+      candidatos match {
+        case Nil => Nil
+
+        case _ =>
+          val citaMinutos = horaEnMinutos(hCita, mCita)
+
+          // Filtrar los itinerarios que llegan el mismo día y el día anterior
+          val mismoDia = candidatos.filter { it =>
+            horaLlegada(it) <= citaMinutos
+          }
+
+          val diaAnterior = candidatos.filter { it =>
+            horaLlegada(it) > citaMinutos
+          }
+
+          // SIEMPRE elegir el de salida más tarde, priorizando mismo día
+          mismoDia match {
+            case Nil =>
+              // Todos son del día anterior, elegir el de salida más tarde
+              diaAnterior.maxBy(horaSalida)
+
+            case _ =>
+              // Hay del mismo día, elegir el de salida más tarde
+              mismoDia.maxBy(horaSalida)
+          }
+      }
+    }
   }
 
 }

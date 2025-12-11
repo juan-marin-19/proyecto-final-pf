@@ -6,61 +6,61 @@ import scala.collection.parallel.ParSeq
 
 package object ItinerariosPar {
 
-    // ----------------------------------------------
-    // 1 Cálculo de todos los itinerarios
-    // ----------------------------------------------
-    def itinerariosPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
+  // ----------------------------------------------
+  // 1 Cálculo de todos los itinerarios
+  // ----------------------------------------------
+  def itinerariosPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
 
-      def construir(actual: String, destino: String, visitados: Set[String]): List[Itinerario] = {
+    def construir(actual: String, destino: String, visitados: Set[String]): List[Itinerario] = {
 
-        val umbral = 10
-        // Caso base
-        if (actual == destino)
-          List(Nil)
-        else {
-          // Vuelos que salen del aeropuerto actual (Secuencial)
-          val salientes =
+      val umbral = 10
+      // Caso base
+      if (actual == destino)
+        List(Nil)
+      else {
+        // Vuelos que salen del aeropuerto actual (Secuencial)
+        val salientes =
+          for {
+            v <- vuelos
+            if v.Org == actual
+            if !visitados(v.Dst)
+          } yield v
+
+        // Función auxiliar que usa common.parallel
+        def parExplore(vuelosPorExplorar: List[Vuelo]): List[Itinerario] = {
+          val n = vuelosPorExplorar.length
+
+          if (n <= umbral) {
+            // Caso base de la exploración paralela
             for {
-              v <- vuelos
-              if v.Org == actual
-              if !visitados(v.Dst)
-            } yield v
+              vuelo <- vuelosPorExplorar
+              resto <- construir(vuelo.Dst, destino, visitados + vuelo.Dst)
+            } yield vuelo :: resto
 
-          // Función auxiliar que usa common.parallel
-          def parExplore(vuelosPorExplorar: List[Vuelo]): List[Itinerario] = {
-            val n = vuelosPorExplorar.length
+          } else {
+            // Paso recursivo paralelo
+            val (left, right) = vuelosPorExplorar.splitAt(n / 2)
 
-            if (n <= umbral) {
-              // Caso base de la exploración paralela
-              for {
-                vuelo <- vuelosPorExplorar
-                resto <- construir(vuelo.Dst, destino, visitados + vuelo.Dst)
-              } yield vuelo :: resto
+            // Llama a parallel para ejecutar las dos mitades en paralelo
+            val (resLeft, resRight) = parallel(
+              parExplore(left),
+              parExplore(right)
+            )
 
-            } else {
-              // Paso recursivo paralelo
-              val (left, right) = vuelosPorExplorar.splitAt(n / 2)
-
-              // Llama a parallel para ejecutar las dos mitades en paralelo
-              val (resLeft, resRight) = parallel(
-                parExplore(left),
-                parExplore(right)
-              )
-
-              resLeft ++ resRight
-            }
+            resLeft ++ resRight
           }
-
-          // Inicia la exploración paralela
-          parExplore(salientes)
         }
+
+        // Inicia la exploración paralela
+        parExplore(salientes)
       }
-
-      // Función final
-      (origen: String, destino: String) =>
-        construir(origen, destino, Set(origen))
-
     }
+
+    // Función final
+    (origen: String, destino: String) =>
+      construir(origen, destino, Set(origen))
+
+  }
 
   // ----------------------------------------------
   // 2. Minimización de tiempo total de viaje (paralelo)
@@ -171,26 +171,25 @@ package object ItinerariosPar {
   // -------------------------------------------------------
   //  Itinerarios con límite de escala (versión paralela)
   // -------------------------------------------------------
-  def itinerariosEscalasPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int) => List[Itinerario] = {
+  def itinerariosEscalasPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
 
-    // Exploración recursiva paralela
-    def construir(actual: String,
-                  destino: String,
-                  visitados: Set[String],
-                  maxEscalas: Int): List[Itinerario] = {
+    // ---------------------------------------
+    // 1. Paralelizar exploración (Divide & Conquer)
+    // ---------------------------------------
+    def construirPar(
+                      actual: String,
+                      destino: String,
+                      visitados: Set[String]
+                    ): List[Itinerario] = {
 
-      val umbral = 10
+      val umbral = 8 // control de granularidad
 
-      // Caso base 1: llegó al destino
+      // Caso base: llegó al destino
       if (actual == destino)
         List(Nil)
-
-      // Caso base 2: se agotaron escalas
-      else if (maxEscalas < 0)
-        Nil
-
       else {
-        // Vuelos salientes (secuencial)
+
+        // vuelos salientes
         val salientes =
           for {
             v <- vuelos
@@ -198,42 +197,60 @@ package object ItinerariosPar {
             if !visitados(v.Dst)
           } yield v
 
-        // Exploración paralela sobre la lista de vuelos posibles
-        def explorarPar(vs: List[Vuelo]): List[Itinerario] = {
-          val n = vs.length
+        // Sin vuelos, no hay itinerarios
+        if (salientes.isEmpty) Nil
+        else {
 
-          if (n <= umbral) {
-            // sin paralelizar
-            for {
-              vuelo <- vs
-              resto <- construir(
-                vuelo.Dst,
-                destino,
-                visitados + vuelo.Dst,
-                maxEscalas - 1
+          def explorar(vs: List[Vuelo]): List[Itinerario] = {
+            val n = vs.length
+
+            // Secuencial si es pequeño
+            if (n <= umbral) {
+              for {
+                v <- vs
+                resto <- construirPar(v.Dst, destino, visitados + v.Dst)
+              } yield v :: resto
+
+            } else {
+              // dividir en dos
+              val (izq, der) = vs.splitAt(n / 2)
+
+              val (resI, resD) = parallel(
+                explorar(izq),
+                explorar(der)
               )
-            } yield vuelo :: resto
 
-          } else {
-            // dividir y conquistar
-            val (izq, der) = vs.splitAt(n / 2)
-
-            val (resIzq, resDer) = parallel(
-              explorarPar(izq),
-              explorarPar(der)
-            )
-
-            resIzq ++ resDer
+              resI ++ resD
+            }
           }
-        }
 
-        explorarPar(salientes)
+          explorar(salientes)
+        }
       }
     }
 
-    // función pública que se retorna
-    (origen: String, destino: String, maxEscalas: Int) =>
-      construir(origen, destino, Set(origen), maxEscalas)
+    // ---------------------------------------
+    // 2. Métrica combinada para escalas
+    // ---------------------------------------
+    def escalasMedida(it: Itinerario): Int =
+      if (it.isEmpty) 0
+      else (it.length - 1) + it.map(_.Esc).sum
+
+    // ---------------------------------------
+    // 3. Función final pública
+    // ---------------------------------------
+    (origen: String, destino: String) => {
+      val listaIts = construirPar(origen, destino, Set(origen))
+
+      if (listaIts.isEmpty) Nil
+      else {
+        // Paralelización de datos
+        val pares = listaIts.par.map(it => (it, escalasMedida(it))).toList
+
+        // Tomar los 3 mejores
+        pares.sortBy(_._2).take(3).map(_._1)
+      }
+    }
   }
 
   def itinerariosAirePar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String) => List[Itinerario] = {
@@ -342,12 +359,53 @@ package object ItinerariosPar {
     }
   }
 
+  def itinerarioSalidaPar(vuelos: List[Vuelo], aeropuertos: List[Aeropuerto]): (String, String, Int, Int) => Itinerario = {
+
+    // Convierte hora local a minutos desde medianoche
+    def horaEnMinutos(h: Int, m: Int): Int = h * 60 + m
+
+    def horaSalida(it: Itinerario): Int = it match {
+      case Nil => 0
+      case vuelo :: _ => horaEnMinutos(vuelo.HS, vuelo.MS)
+    }
+
+    def horaLlegada(it: Itinerario): Int = it match {
+      case Nil => 0
+      case _ => horaEnMinutos(it.last.HL, it.last.ML)
+    }
+
+    val todosItinerarios = itinerarios(vuelos, aeropuertos)
+
+    (cod1: String, cod2: String, hCita: Int, mCita: Int) => {
+
+      val candidatos = todosItinerarios(cod1, cod2)
+
+      candidatos match {
+        case Nil => Nil
+
+        case _ =>
+          val citaMinutos = horaEnMinutos(hCita, mCita)
+
+          // Filtrar los itinerarios que llegan el mismo día y el día anterior usando colecciones paralelas
+          val mismosDiaPar = candidatos.par.filter { it =>
+            horaLlegada(it) <= citaMinutos
+          }
+
+          val diaAnteriorPar = candidatos.par.filter { it =>
+            horaLlegada(it) > citaMinutos
+          }
+
+          // SIEMPRE elegir el de salida más tarde, priorizando mismo día
+          if (mismosDiaPar.isEmpty) {
+            // Todos son del día anterior, elegir el de salida más tarde
+            diaAnteriorPar.maxBy(horaSalida)
+          } else {
+            // Hay del mismo día, elegir el de salida más tarde
+            mismosDiaPar.maxBy(horaSalida)
+          }
+      }
+    }
+  }
+
 
 }
-
-
-
-
-
-
-

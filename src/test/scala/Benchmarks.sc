@@ -131,6 +131,8 @@ println(s"Aceleración itinerarios 100: ${speedup(tItsSeq100, tItsPar100)}")
 // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
 titulo("itinerarios vs itinerariosPar - 200 vuelos (C1 ++ C2) ORD -> TPA")
 
+val vuelos200b = vuelosC1 ++ vuelosC2
+
 val funItsSeq200 = itinerarios(vuelos200b, aeropuertos)
 val funItsPar200 = itinerariosPar(vuelos200b, aeropuertos)
 
@@ -186,6 +188,8 @@ println(s"Aceleración Escalas 100: ${speedup(tEscSeq100, tEscPar100)}")
 
 // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
 titulo("itinerariosEscalas vs itinerariosEscalasPar - 200 vuelos (C1 ++ C2) ORD -> TPA")
+
+val vuelos200b = vuelosC1 ++ vuelosC2
 
 val funEscSeq200 = itinerariosEscalas(vuelos200b, aeropuertos)
 val funEscPar200 = itinerariosEscalasPar(vuelos200b, aeropuertos)
@@ -243,6 +247,8 @@ println(s"Aceleración Aire 100: ${speedup(tAirSeq100, tAirPar100)}")
 // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
 titulo("itinerariosAire vs itinerariosAirePar - 200 vuelos (C1 ++ C2) ORD -> TPA")
 
+val vuelos200b = vuelosC1 ++ vuelosC2
+
 val funAirSeq200 = itinerariosAire(vuelos200b, aeropuertos)
 val funAirPar200 = itinerariosAirePar(vuelos200b, aeropuertos)
 
@@ -298,6 +304,8 @@ println(s"Aceleración Salida 100: ${speedup(tSalSeq100, tSalPar100)}")
 
 // --- 200 vuelos (C1 ++ C2) ORD -> TPA ---
 titulo("itinerarioSalida vs itinerarioSalidaPar - 200 vuelos (C1 ++ C2) ORD -> TPA")
+
+val vuelos200b = vuelosC1 ++ vuelosC2
 
 val funSalSeq200 = itinerarioSalida(vuelos200b, aeropuertos)
 val funSalPar200 = itinerarioSalidaPar(vuelos200b, aeropuertos)
